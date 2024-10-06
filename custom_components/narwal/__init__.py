@@ -16,7 +16,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEnt
     _LOGGER.info("Configurando la entrada: %s", entry.title)
 
     # Llama a la función async_setup_entry desde button.py
-    await async_setup_entry(hass, entry)
+    # await async_setup_entry(hass, entry)
 
     return True
 
