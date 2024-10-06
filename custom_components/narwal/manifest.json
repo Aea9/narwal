@@ -1,12 +1,12 @@
 {
-    "domain": "narwal",
-    "name": "Narwal",
-    "version": "0.0.1",
-    "documentation": "https://www.example.com",
-    "requirements": [],
-    "dependencies": [
-      "paho-mqtt==1.6.1"
-    ],
-    "codeowners": [],
-    "config_flow": true
-  }
+  "domain": "narwal",
+  "name": "Narwal",
+  "version": "0.0.1",
+  "documentation": "https://www.example.com",
+  "requirements": [
+    "paho-mqtt==1.6.1"
+  ],
+  "dependencies": [],
+  "codeowners": [],
+  "config_flow": true
+}
