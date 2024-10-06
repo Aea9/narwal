@@ -1,7 +1,8 @@
 import logging
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
-from .button import async_setup_entry
+
+from .button import async_setup_entry  # Importa la función para añadir botones
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEnt
     """Configura una entrada de configuración."""
     _LOGGER.info("Configurando la entrada: %s", entry.title)
 
-    # Asegúrate de que llamas a async_setup_entry de button.py
+    # Llama a la función async_setup_entry desde button.py
     await async_setup_entry(hass, entry)
 
     return True
@@ -36,16 +37,13 @@ class MyPythonButtonsConfigFlow(config_entries.ConfigFlow, domain="narwal"):
 
     def _get_data_schema(self):
         """Devuelve el esquema de datos para el formulario."""
-        from homeassistant.helpers import config_entry_flow
-        from homeassistant import data_entry_flow
+        import voluptuous as vol
 
-        return {
-            # Define aquí los campos necesarios para la configuración
-            # Ejemplo:
-            "email": str,
-            "password": str,
-            "secret_id": str,
-            "device_id": str,
-            "device_password": str,
-            "otro": str
-        }
+        return vol.Schema({
+            vol.Required("email"): str,
+            vol.Required("password"): str,
+            vol.Required("secret_id"): str,
+            vol.Required("device_id"): str,
+            vol.Required("device_password"): str,
+            vol.Required("otro"): str,
+        })
