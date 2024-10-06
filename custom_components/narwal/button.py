@@ -1,6 +1,6 @@
 from homeassistant.components.button import ButtonEntity
 from homeassistant.core import HomeAssistant
-from urllib import request, parse
+from urllib import request
 import json
 import paho.mqtt.client as mqtt
 import ssl
@@ -27,7 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
     
     req = request.Request("https://de-idass.narwaltech.com/user-authentication-server/v2/login/loginByEmail", data=data)
     req.add_header('secret_id', secret_id)
-    
+
     try:
         resp = request.urlopen(req)
         decodedResponse = json.loads(resp.read())
@@ -37,8 +37,18 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
         _LOGGER.error("Error en la autenticación: %s", e)
         return
 
-    clientId = "app_" + uuid + "_homeassistant"
-    mqttc = mqtt.Client(client_id=clientId)  # Corregido aquí
+    mqttc = create_mqtt_client(authToken, uuid)
+
+    # Añadir los botones
+    async_add_entities([
+        MyPythonButton(hass, "Start", email, secret_id, device_id, device_password, mqttc, otro),
+        MyPythonButton(hass, "Stop", email, secret_id, device_id, device_password, mqttc, otro)
+    ])
+
+def create_mqtt_client(authToken: str, uuid: str):
+    """Crea y retorna un cliente MQTT configurado."""
+    clientId = f"app_{uuid}_homeassistant"
+    mqttc = mqtt.Client(client_id=clientId)
     mqttc.tls_set(certfile=None, keyfile=None, cert_reqs=ssl.CERT_NONE)
     mqttc.username_pw_set("", authToken)
 
@@ -46,20 +56,14 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
         mqttc.connect("de-mqtt.narwaltech.com", 8883, 60)
     except Exception as e:
         _LOGGER.error("Error al conectar a MQTT: %s", e)
-        return
 
-    # Añadir los botones
-    async_add_entities([
-        MyPythonButton(hass, "Botón 1", email, password, secret_id, device_id, device_password, mqttc, otro),
-        MyPythonButton(hass, "Botón 2", email, password, secret_id, device_id, device_password, mqttc, otro)
-    ])
+    return mqttc
 
 class MyPythonButton(ButtonEntity):
-    def __init__(self, hass: HomeAssistant, name: str, email: str, password: str, secret_id: str, device_id: str, device_password: str, mqttc, otro):
+    def __init__(self, hass: HomeAssistant, name: str, email: str, secret_id: str, device_id: str, device_password: str, mqttc, otro):
         self._hass = hass
         self._name = name
         self._email = email
-        self._password = password
         self._secret_id = secret_id
         self._device_id = device_id
         self._device_password = device_password
@@ -75,15 +79,13 @@ class MyPythonButton(ButtonEntity):
         """Acción a ejecutar cuando se presiona el botón."""
         _LOGGER.info(f"Presionado: {self._name}")
         
-        # Llamar a las funciones usando los datos de configuración
-        if self._name == "Botón 1":
+        if self._name == "Start":
             await self.run_start()
-        elif self._name == "Botón 2":
+        elif self._name == "Stop":
             await self.run_home()
 
     async def run_start(self):
-        # Return to home payload
-        returnToHomeName = f"/{self._device_id}/{self._device_password}/supply/recall"  # Corregido aquí
+        returnToHomeName = f"/{self._device_id}/{self._device_password}/supply/recall"
         returnToHomePayload = (
             bytearray(b'\x01D\n "') + 
             self._otro.encode('utf-8') + 
@@ -97,12 +99,11 @@ class MyPythonButton(ButtonEntity):
             self._mqttc.publish(returnToHomeName, returnToHomePayload)
         finally:
             self._mqttc.loop_stop()
-        
-        _LOGGER.info(f"Ejecutando Aspirar con email: {self._email}, password: {self._password}, secret_id: {self._secret_id}, device_id: {self._device_id}, device_password: {self._device_password}")
+
+        _LOGGER.info(f"Ejecutando Aspirar con email: {self._email}")
 
     async def run_home(self):
-        # Clean entire house
-        cleanTopicName = f"/{self._device_id}/{self._device_password}/clean/start_clean"  # Corregido aquí
+        cleanTopicName = f"/{self._device_id}/{self._device_password}/clean/start_clean"
         entireHousePayload = (
             bytearray(b'\x01D\n "') + 
             self._otro.encode('utf-8') + 
@@ -116,5 +117,5 @@ class MyPythonButton(ButtonEntity):
             self._mqttc.publish(cleanTopicName, entireHousePayload)
         finally:
             self._mqttc.loop_stop()
-        
-        _LOGGER.info(f"Ejecutando Casa con email: {self._email}, password: {self._password}, secret_id: {self._secret_id}, device_id: {self._device_id}, device_password: {self._device_password}")
+
+        _LOGGER.info(f"Ejecutando Casa con email: {self._email}")
