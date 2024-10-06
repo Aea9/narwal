@@ -8,7 +8,7 @@ DATA_SCHEMA = vol.Schema({
     vol.Required("password"): str,
     vol.Required("secret_id"): str,
     vol.Required("device_id"): str,
-    vol.Required("device_password"): str
+    vol.Required("device_password"): str,
     vol.Required("otro"): str
 })
 
