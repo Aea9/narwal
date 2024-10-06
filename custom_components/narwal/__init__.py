@@ -1,43 +1,51 @@
 import logging
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
+from .button import async_setup_entry
 
-# Inicializa el logger
 _LOGGER = logging.getLogger(__name__)
 
 async def async_setup(hass: HomeAssistant, config: dict):
-    """Configura la integración Narwal."""
-    _LOGGER.info("Configurando la integración Narwal")
+    """Configura el componente durante la inicialización de Home Assistant."""
+    _LOGGER.info("Iniciando el componente Narwal")
     return True
 
-async def async_setup_entry(hass: HomeAssistant, config_entry: config_entries.ConfigEntry):
-    """Configura una entrada de configuración para Narwal."""
-    _LOGGER.info(f"Configurando la entrada Narwal: {config_entry.data}")
+async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEntry):
+    """Configura una entrada de configuración."""
+    _LOGGER.info("Configurando la entrada: %s", entry.title)
 
-    # Almacena datos de configuración en hass.data
-    hass.data.setdefault("narwal", {})
-    hass.data["narwal"][config_entry.entry_id] = config_entry.data
-
-    # Aquí puedes agregar la lógica para añadir las entidades, como botones
-    # Asegúrate de que ya tengas la función async_add_entities definida correctamente
-    await async_add_entities(hass, config_entry)
+    # Asegúrate de que llamas a async_setup_entry de button.py
+    await async_setup_entry(hass, entry)
 
     return True
 
-async def async_add_entities(hass: HomeAssistant, config_entry: config_entries.ConfigEntry):
-    """Agrega las entidades para la integración Narwal."""
-    from .button import MyPythonButton  # Asegúrate de que tu clase MyPythonButton esté correctamente importada
+class MyPythonButtonsConfigFlow(config_entries.ConfigFlow, domain="narwal"):
+    """Maneja la configuración de la integración."""
 
-    # Obtén los datos de configuración
-    email = config_entry.data.get("email")
-    password = config_entry.data.get("password")
-    secret_id = config_entry.data.get("secret_id")
-    device_id = config_entry.data.get("device_id")
-    device_password = config_entry.data.get("device_password")
-    otro = config_entry.data.get("otro")
+    async def async_step_user(self, user_input=None):
+        """Paso inicial para solicitar información al usuario."""
+        if user_input is None:
+            return self.async_show_form(
+                step_id="user",
+                data_schema=self._get_data_schema(),
+            )
 
-    # Crea las entidades de los botones
-    async_add_entities([
-        MyPythonButton(hass, "Botón 1", email, password, secret_id, device_id, device_password, otro),
-        MyPythonButton(hass, "Botón 2", email, password, secret_id, device_id, device_password, otro)
-    ])
+        # Aquí puedes manejar la validación de los datos ingresados
+        # y proceder a crear la entrada si todo es válido.
+        return self.async_create_entry(title="Narwal", data=user_input)
+
+    def _get_data_schema(self):
+        """Devuelve el esquema de datos para el formulario."""
+        from homeassistant.helpers import config_entry_flow
+        from homeassistant import data_entry_flow
+
+        return {
+            # Define aquí los campos necesarios para la configuración
+            # Ejemplo:
+            "email": str,
+            "password": str,
+            "secret_id": str,
+            "device_id": str,
+            "device_password": str,
+            "otro": str
+        }
