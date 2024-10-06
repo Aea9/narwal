@@ -5,7 +5,9 @@
     "version": "0.1s",
     "documentation": "https://www.example.com",
     "requirements": [],
-    "dependencies": [],
+    "dependencies": [
+      "paho-mqtt==1.6.1"
+    ],
     "codeowners": [],
     "config_flow": true
   }

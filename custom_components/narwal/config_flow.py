@@ -9,9 +9,10 @@ DATA_SCHEMA = vol.Schema({
     vol.Required("secret_id"): str,
     vol.Required("device_id"): str,
     vol.Required("device_password"): str
+    vol.Required("otro"): str
 })
 
-class MyPythonButtonsConfigFlow(config_entries.ConfigFlow, domain="my_python_buttons"):
+class MyPythonButtonsConfigFlow(config_entries.ConfigFlow, domain="narwal"):
     """Manejador del flujo de configuración para My Python Buttons."""
 
     VERSION = 1
