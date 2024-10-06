@@ -1,4 +1,3 @@
-
 {
     "domain": "narwal",
     "name": "Narwal",
@@ -11,4 +10,3 @@
     "codeowners": [],
     "config_flow": true
   }
-  
