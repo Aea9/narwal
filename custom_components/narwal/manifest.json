@@ -1,7 +1,7 @@
 {
   "domain": "narwal",
   "name": "Narwal",
-  "version": "0.0.123",
+  "version": "0.0.124",
   "documentation": "https://www.example.com",
   "requirements": [
     "paho-mqtt==1.6.1"
