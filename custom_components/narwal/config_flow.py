@@ -13,7 +13,7 @@ DATA_SCHEMA = vol.Schema({
 })
 
 class MyPythonButtonsConfigFlow(config_entries.ConfigFlow, domain="narwal"):
-    """Manejador del flujo de configuración para My Python Buttons."""
+    """Manejador del flujo de configuración para Narwal."""
 
     VERSION = 1
 
@@ -21,7 +21,7 @@ class MyPythonButtonsConfigFlow(config_entries.ConfigFlow, domain="narwal"):
         """Primer paso en el flujo de configuración."""
         if user_input is not None:
             # Guardar los datos ingresados por el usuario
-            return self.async_create_entry(title="My Python Buttons", data=user_input)
+            return self.async_create_entry(title="Narwal", data=user_input)
 
         # Si no hay datos ingresados, mostrar el formulario
         return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA)
