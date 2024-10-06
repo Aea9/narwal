@@ -2,7 +2,7 @@ import logging
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 
-from .button import async_setup_entry  # Importa la función para añadir botones
+from .button import async_setup_entry as b_async_setup_entry # Importa la función para añadir botones
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: config_entries.ConfigEnt
     _LOGGER.info("Configurando la entrada: %s", entry.title)
 
     # Llama a la función async_setup_entry desde button.py
-    # await async_setup_entry(hass, entry)
+    await b_async_setup_entry(hass, entry)
 
     return True
 
