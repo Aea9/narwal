@@ -1,0 +1,12 @@
+
+{
+    "domain": "narwal",
+    "name": "Narwal",
+    "version": "0.1s",
+    "documentation": "https://www.example.com",
+    "requirements": [],
+    "dependencies": [],
+    "codeowners": [],
+    "config_flow": true
+  }
+  
